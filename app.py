@@ -2,67 +2,37 @@ import streamlit as st
 from Crypto.Cipher import DES
 import binascii
 
-st.title("DES 64-bit Encryption Visualizer")
+st.title("DES Encryption (Hex Input)")
 
-st.write("DES works on a 64-bit block (8 characters).")
+st.write("Enter 16-hex-digit plaintext and key (64-bit)")
 
-plaintext = st.text_input("Enter 8 Character Plaintext")
-key = st.text_input("Enter 8 Character Key")
+plaintext_hex = st.text_input("Plaintext")
+key_hex = st.text_input("Key (HEX)", "133457799BBCDFF1")
 
-def to_bin(data):
-    return ''.join(format(b,'08b') for b in data)
 
-def split_lr(binary):
-    return binary[:32], binary[32:]
+def hex_to_bin(hex_string):
+    return bin(int(hex_string,16))[2:].zfill(64)
+
 
 if st.button("Encrypt"):
 
-    if len(key) != 8 or len(plaintext) != 8:
-        st.error("Plaintext and Key must both be exactly 8 characters (64 bits)")
+    if len(plaintext_hex) != 16 or len(key_hex) != 16:
+        st.error("Plaintext and Key must be 16 hex characters (64 bits)")
     else:
 
-        key_bytes = key.encode()
-        pt_bytes = plaintext.encode()
+        plaintext = bytes.fromhex(plaintext_hex)
+        key = bytes.fromhex(key_hex)
 
-        cipher = DES.new(key_bytes, DES.MODE_ECB)
+        cipher = DES.new(key, DES.MODE_ECB)
+        ciphertext = cipher.encrypt(plaintext)
 
-        pt_bin = to_bin(pt_bytes)
+        ciphertext_hex = binascii.hexlify(ciphertext).decode().upper()
 
         st.write("Plaintext Binary")
-        st.code(pt_bin)
+        st.code(hex_to_bin(plaintext_hex))
 
-        L, R = split_lr(pt_bin)
+        st.write("Key Binary")
+        st.code(hex_to_bin(key_hex))
 
-        st.write("L0")
-        st.code(L)
-
-        st.write("R0")
-        st.code(R)
-
-        for i in range(1,17):
-
-            st.subheader(f"Round {i}")
-
-            newL = R
-
-            xor_result = int(L,2) ^ int(R,2)
-            newR = format(xor_result,'032b')
-
-            st.write("Li = Ri-1")
-            st.code(newL)
-
-            st.write("Ri = Li-1 XOR Ri-1")
-            st.code(newR)
-
-            L = newL
-            R = newR
-
-        final = R + L
-
-        st.write("Final Swap")
-        st.code(final)
-
-        ciphertext = cipher.encrypt(pt_bytes)
-
-        st.write("Ciphertext (Hex)")
-        st.code(binascii.hexlify(ciphertext).decode())
+        st.write("Ciphertext (HEX)")
+        st.success(ciphertext_hex)
