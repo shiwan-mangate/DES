@@ -1,13 +1,10 @@
 import streamlit as st
 
-st.title("DES Full Visualizer")
+st.title("DES Full Intermediate Visualizer")
 
-plaintext_hex = st.text_input("Plaintext (HEX)", "0123456789ABCDEF")
-key_hex = st.text_input("Key (HEX)", "133457799BBCDFF1")
+plaintext_hex = st.text_input("Plaintext HEX", "0123456789ABCDEF")
+key_hex = st.text_input("Key HEX", "133457799BBCDFF1")
 
-# -------------------------
-# DES TABLES
-# -------------------------
 
 IP = [
 58,50,42,34,26,18,10,2,
@@ -75,53 +72,45 @@ P = [
 22,11,4,25
 ]
 
-SHIFT = [1,1,2,2,2,2,2,2,1,2,2,2,2,2,2,1]
+SHIFTS = [
+1,1,2,2,2,2,2,2,
+1,2,2,2,2,2,2,1
+]
 
-# -------------------------
-# Helper Functions
-# -------------------------
-
-def hex_to_bin(hex_string):
-    return bin(int(hex_string,16))[2:].zfill(len(hex_string)*4)
-
-def bin_to_hex(bin_string):
-    return hex(int(bin_string,2))[2:].upper().zfill(len(bin_string)//4)
 
 def permute(bits, table):
     return ''.join(bits[i-1] for i in table)
 
-def shift_left(bits, n):
+def left_shift(bits, n):
     return bits[n:] + bits[:n]
 
 def xor(a,b):
-    return ''.join('0' if i==j else '1' for i,j in zip(a,b))
+    return ''.join('1' if x!=y else '0' for x,y in zip(a,b))
 
-
-# -------------------------
-# MAIN
-# -------------------------
 
 if st.button("Run DES"):
 
-    pt_bin = hex_to_bin(plaintext_hex)
-    key_bin = hex_to_bin(key_hex)
+    pt_bin = bin(int(plaintext_hex,16))[2:].zfill(64)
+    key_bin = bin(int(key_hex,16))[2:].zfill(64)
 
-    st.subheader("Binary Inputs")
-
-    st.write("Plaintext")
+    st.write("Plaintext Binary")
     st.code(pt_bin)
 
-    st.write("Key")
+    st.write("Key Binary")
     st.code(key_bin)
 
-    # -------------------------
-    # KEY SCHEDULE
-    # -------------------------
+    ip = permute(pt_bin, IP)
 
-    st.subheader("PC-1 Permutation")
+    L = ip[:32]
+    R = ip[32:]
 
-    key56 = permute(key_bin,PC1)
-    st.code(key56)
+    st.write("L0")
+    st.code(L)
+
+    st.write("R0")
+    st.code(R)
+
+    key56 = permute(key_bin, PC1)
 
     C = key56[:28]
     D = key56[28:]
@@ -136,64 +125,23 @@ if st.button("Run DES"):
 
     for i in range(16):
 
-        C = shift_left(C,SHIFT[i])
-        D = shift_left(D,SHIFT[i])
+        C = left_shift(C, SHIFTS[i])
+        D = left_shift(D, SHIFTS[i])
 
-        st.write(f"C{i+1}")
-        st.code(C)
-
-        st.write(f"D{i+1}")
-        st.code(D)
-
-        K = permute(C+D,PC2)
+        CD = C + D
+        K = permute(CD, PC2)
 
         round_keys.append(K)
 
         st.write(f"K{i+1}")
         st.code(K)
 
-    # -------------------------
-    # INITIAL PERMUTATION
-    # -------------------------
-
-    st.subheader("Initial Permutation")
-
-    ip = permute(pt_bin,IP)
-
-    L = ip[:32]
-    R = ip[32:]
-
-    st.write("L0")
-    st.code(L)
-
-    st.write("R0")
-    st.code(R)
-
-    # -------------------------
-    # ROUNDS
-    # -------------------------
-
     for i in range(16):
 
-        st.subheader(f"Round {i+1}")
+        ER = permute(R,E)
+        x = xor(ER, round_keys[i])
 
-        expanded = permute(R,E)
-
-        st.write("Expansion")
-        st.code(expanded)
-
-        x = xor(expanded,round_keys[i])
-
-        st.write("XOR with Ki")
-        st.code(x)
-
-        # skipping S-box for brevity here
-        s_output = x[:32]
-
-        p_output = permute(s_output,P)
-
-        newR = xor(L,p_output)
-
+        newR = xor(L, x[:32])
         L = R
         R = newR
 
@@ -203,8 +151,11 @@ if st.button("Run DES"):
         st.write(f"R{i+1}")
         st.code(R)
 
-    final = permute(R+L,IP_INV)
+    final = R + L
 
-    st.subheader("Ciphertext")
+    cipher_bin = permute(final, IP_INV)
 
-    st.success(bin_to_hex(final))
+    cipher_hex = hex(int(cipher_bin,2))[2:].upper().zfill(16)
+
+    st.write("Ciphertext")
+    st.success(cipher_hex)
