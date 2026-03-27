@@ -6,93 +6,110 @@ st.markdown("""
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
 
-html, body, [class*="css"] {
+html, body, [class*="css"]  {
     font-family: 'Inter', sans-serif;
 }
 
-/* App background */
+/* MAIN BACKGROUND */
+
 .stApp{
-background: linear-gradient(135deg,#020617,#020617,#0f172a);
+background: radial-gradient(circle at top,#0f172a,#020617);
 color:#e2e8f0;
 }
 
-/* Sidebar */
+/* SIDEBAR */
+
 section[data-testid="stSidebar"]{
 background:#020617;
-border-right:1px solid rgba(0,255,255,0.15);
+border-right:1px solid rgba(0,255,255,0.1);
 }
 
-/* Title */
+section[data-testid="stSidebar"] *{
+color:#e2e8f0;
+}
+
+/* HEADER */
+
 h1{
+font-size:34px;
 color:#67e8f9;
+font-weight:600;
 letter-spacing:1px;
 }
 
-/* Cards */
+/* DASHBOARD CARDS */
+
 .card{
 background:rgba(15,23,42,0.6);
-padding:20px;
-border-radius:12px;
-border:1px solid rgba(0,255,255,0.1);
-box-shadow:0 0 20px rgba(0,255,255,0.08);
-margin-bottom:20px;
-backdrop-filter: blur(6px);
+border:1px solid rgba(0,255,255,0.08);
+border-radius:14px;
+padding:24px;
+margin-bottom:22px;
+backdrop-filter: blur(10px);
+box-shadow:0 10px 30px rgba(0,0,0,0.6);
 }
 
-/* Stage Box */
-.stage-box{
+/* STAGE PANELS */
+
+.stage{
 background:#020617;
-border-left:4px solid #22c55e;
-padding:15px;
-border-radius:8px;
-margin-bottom:15px;
+border:1px solid rgba(255,255,255,0.05);
+border-radius:12px;
+padding:20px;
+margin-top:20px;
 }
 
-/* Binary code display */
-.binary-box{
+/* TERMINAL BOX */
+
+pre{
 background:#000000;
-color:#22c55e;
-font-family:monospace;
-padding:12px;
 border-radius:8px;
+padding:14px;
+color:#22c55e;
 border:1px solid #1e293b;
 }
 
-/* Buttons */
-.stButton>button{
-background:linear-gradient(90deg,#06b6d4,#22c55e);
+/* TEXT INPUT */
+
+.stTextInput input{
+background:#020617;
+border:1px solid rgba(255,255,255,0.08);
+border-radius:8px;
 color:white;
+padding:10px;
+}
+
+/* BUTTON */
+
+.stButton>button{
+background:linear-gradient(90deg,#06b6d4,#67e8f9);
+border:none;
 border-radius:8px;
 padding:10px 20px;
 font-weight:600;
-border:none;
+color:#020617;
 transition:0.3s;
 }
 
 .stButton>button:hover{
-box-shadow:0 0 12px #22c55e;
+box-shadow:0 0 18px rgba(103,232,249,0.8);
 transform:translateY(-2px);
 }
 
-/* Inputs */
-.stTextInput input{
-background:#020617;
-color:white;
-border:1px solid rgba(0,255,255,0.15);
-border-radius:6px;
-}
+/* SUCCESS CARD */
 
-/* Code blocks */
-pre{
-background:#000;
-border:1px solid #1e293b;
-border-radius:8px;
-color:#22c55e;
-}
-
-/* Success message */
 .stAlert{
-border-radius:10px;
+border-radius:12px;
+border:1px solid rgba(34,197,94,0.3);
+}
+
+/* ROUND SEPARATORS */
+
+hr{
+border:0;
+height:1px;
+background:rgba(255,255,255,0.06);
+margin:25px 0;
 }
 
 </style>
