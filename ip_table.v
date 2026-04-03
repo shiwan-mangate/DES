@@ -1,20 +1,17 @@
 `timescale 1ns / 1ps
-module ip_table(output reg [64:1] out, input [64:1] in);
-
-integer IP[64:1];
-integer i;
-
-always @(*)
-begin
-
-IP[1]=58; IP[2]=50; IP[3]=42; IP[4]=34;
-IP[5]=26; IP[6]=18; IP[7]=10; IP[8]=2;
-...
-IP[64]=7;
-
-for(i=1;i<=64;i=i+1)
-out[64-i+1] = in[64-IP[i]+1];
-
-end
-
+module ip_table(output reg [64:1] IP_out, input [64:1] in);
+  integer IP[64:1];
+  integer i;
+  always @(*) begin
+    IP[1]=58; IP[2]=50; IP[3]=42; IP[4]=34; IP[5]=26; IP[6]=18; IP[7]=10; IP[8]=2;
+    IP[9]=60; IP[10]=52; IP[11]=44; IP[12]=36; IP[13]=28; IP[14]=20; IP[15]=12; IP[16]=4;
+    IP[17]=62; IP[18]=54; IP[19]=46; IP[20]=38; IP[21]=30; IP[22]=22; IP[23]=14; IP[24]=6;
+    IP[25]=64; IP[26]=56; IP[27]=48; IP[28]=40; IP[29]=32; IP[30]=24; IP[31]=16; IP[32]=8;
+    IP[33]=57; IP[34]=49; IP[35]=41; IP[36]=33; IP[37]=25; IP[38]=17; IP[39]=9;  IP[40]=1;
+    IP[41]=59; IP[42]=51; IP[43]=43; IP[44]=35; IP[45]=27; IP[46]=19; IP[47]=11; IP[48]=3;
+    IP[49]=61; IP[50]=53; IP[51]=45; IP[52]=37; IP[53]=29; IP[54]=21; IP[55]=13; IP[56]=5;
+    IP[57]=63; IP[58]=55; IP[59]=47; IP[60]=39; IP[61]=31; IP[62]=23; IP[63]=15; IP[64]=7;
+    for(i=1; i<=64; i=i+1)
+      IP_out[64-i+1] = in[64-IP[i]+1];
+  end
 endmodule
