@@ -7,13 +7,14 @@ module processkey_des(
   input [64:1] key
 );
   wire [56:1] PC1_out;
+  reg  [56:1] CD;
   wire [48:1] PC2_out;
 
   pc1_table PC1M (.PC1_out(PC1_out), .in(key));
+  pc2_table PC2M (.PC2_out(PC2_out), .in(CD));
 
   reg [28:1] C[16:0], D[16:0];
   reg [48:1] K[1:16];
-  reg [56:1] CD;
   integer i;
   integer shift_left[1:16];
 
@@ -34,21 +35,8 @@ module processkey_des(
         C[i] = {C[i-1][26:1], C[i-1][28:27]};
         D[i] = {D[i-1][26:1], D[i-1][28:27]};
       end
-      CD = {C[i], D[i]};
-      // inline PC2 permutation
-      begin : pc2_block
-        integer PC2[48:1]; integer k;
-        PC2[1]=14;  PC2[2]=17;  PC2[3]=11;  PC2[4]=24;  PC2[5]=1;   PC2[6]=5;
-        PC2[7]=3;   PC2[8]=28;  PC2[9]=15;  PC2[10]=6;  PC2[11]=21; PC2[12]=10;
-        PC2[13]=23; PC2[14]=19; PC2[15]=12; PC2[16]=4;  PC2[17]=26; PC2[18]=8;
-        PC2[19]=16; PC2[20]=7;  PC2[21]=27; PC2[22]=20; PC2[23]=13; PC2[24]=2;
-        PC2[25]=41; PC2[26]=52; PC2[27]=31; PC2[28]=37; PC2[29]=47; PC2[30]=55;
-        PC2[31]=30; PC2[32]=40; PC2[33]=51; PC2[34]=45; PC2[35]=33; PC2[36]=48;
-        PC2[37]=44; PC2[38]=49; PC2[39]=39; PC2[40]=56; PC2[41]=34; PC2[42]=53;
-        PC2[43]=46; PC2[44]=42; PC2[45]=50; PC2[46]=36; PC2[47]=29; PC2[48]=32;
-        for(k=1; k<=48; k=k+1)
-          K[i][48-k+1] = CD[56-PC2[k]+1];
-      end
+      CD   = {C[i], D[i]};
+      K[i] = PC2_out;
     end
 
     key1=K[1];  key2=K[2];  key3=K[3];  key4=K[4];
